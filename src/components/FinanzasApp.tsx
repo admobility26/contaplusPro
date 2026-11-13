@@ -169,9 +169,9 @@ function App({ onLock }: { onLock: () => void }) {
     <div className="app-shell">
       <aside className={`sidebar ${sidebar ? "open" : ""}`}>
         <div className="brand">
-          <div className="brand-mark">FL</div>
+          <div className="brand-mark">CP</div>
           <div>
-            <strong>Finanzas Local</strong>
+            <strong>ContaPlus Pro</strong>
             <span>Privado · en tu dispositivo</span>
           </div>
           <button className="icon-btn mobile-only" onClick={() => setSidebar(false)}>
