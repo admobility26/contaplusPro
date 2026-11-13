@@ -74,21 +74,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Finanzas Local" },
+      { title: "ContaPlus Pro" },
       { name: "description", content: "Contabilidad doméstica local-first: tus datos financieros nunca salen de tu dispositivo." },
-      { name: "author", content: "Finanzas Local" },
-      { property: "og:title", content: "Finanzas Local" },
+      { name: "author", content: "ContaPlus Pro" },
+      { property: "og:title", content: "ContaPlus Pro" },
       { property: "og:description", content: "Contabilidad doméstica privada, en tu navegador." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
+      
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
     ],
   }),
   shellComponent: RootShell,
@@ -99,7 +99,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="es">
       <head>
         <HeadContent />
       </head>
