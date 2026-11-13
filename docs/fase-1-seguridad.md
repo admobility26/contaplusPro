@@ -29,7 +29,7 @@ Código trasladado al repositorio independiente `admobility26/contaplusPro`. **T
 9. Comprobar transferencias internas, tarjetas y pagos recurrentes sin contar dos veces.
 10. Confirmar que todos los datos privados están en `finanzas-vault-v1`, no en el repositorio ni en la base de datos antigua.
 
-Para pruebas locales con Bun: `bun install`, `bun test`, `bun run typecheck`, `bun run build`. Los scripts previos `predev` y `prebuild` copian los activos de Tesseract al directorio público automáticamente.
+Para pruebas locales con Bun: `bun install`, `bun test`, `bun run typecheck`, `bun run build`. Los comandos de desarrollo y compilación copian automáticamente los archivos de Tesseract al directorio público antes de arrancar.
 
 ## Riesgos pendientes
 - Sin recuperación de contraseña ni acceso multidispositivo.
