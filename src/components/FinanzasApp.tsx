@@ -45,9 +45,8 @@ import {
   deleteCategory,
   deleteTransaction,
   deleteTransactions,
-  clearLegacyData,
+  getInitialData,
   getAllData,
-  readLegacyData,
   importLegacyBackup,
   saveAccount,
   saveCategory,
@@ -2535,7 +2534,6 @@ type VaultScreen = "checking" | "setup" | "unlock" | "ready";
 
 export default function FinanceSecureApp() {
   const [screen, setScreen] = useState<VaultScreen>("checking");
-  const [previousData, setPreviousData] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
   const [error, setError] = useState("");
@@ -2549,11 +2547,7 @@ export default function FinanceSecureApp() {
         if (exists) {
           if (current) setScreen("unlock");
         } else {
-          const legacy = await readLegacyData();
-          if (current) {
-            setPreviousData(legacy.hasPreviousRecords);
-            setScreen("setup");
-          }
+          if (current) setScreen("setup");
         }
       } catch (reason) {
         if (current) setError(reason instanceof Error ? reason.message : "No se pudo abrir la caja local.");
@@ -2570,13 +2564,7 @@ export default function FinanceSecureApp() {
     try {
       if (screen === "setup") {
         if (password !== confirmation) throw new Error("Las contraseñas no coinciden.");
-        const legacy = await readLegacyData();
-        await createVault(password, legacy.data);
-        try {
-          await clearLegacyData();
-        } catch {
-          alert("Los datos están cifrados, pero no se pudo limpiar la antigua base sin cifrar. Revisa el almacenamiento antes de añadir extractos nuevos.");
-        }
+        await createVault(password, getInitialData());
       } else if (screen === "unlock") {
         await unlockVault(password);
       }
@@ -2602,9 +2590,7 @@ export default function FinanceSecureApp() {
         <p>Los movimientos y saldos se almacenan cifrados en este dispositivo. Necesitarás tu contraseña cada vez que abras la aplicación.</p>
         {screen === "setup" && (
           <p className="notice">
-            {previousData
-              ? "Se han encontrado datos de la versión anterior. Se copiarán al almacenamiento cifrado antes de borrar los registros antiguos."
-              : "Primera configuración. No podremos recuperar tu contraseña si la olvidas: guarda una copia cifrada en un lugar seguro."}
+            Primera configuración independiente. Los datos de la aplicación anterior NO se leerán ni se borrarán. Si tienes un respaldo JSON antiguo, impórtalo después desde Ajustes.
           </p>
         )}
         {screen !== "checking" ? (
