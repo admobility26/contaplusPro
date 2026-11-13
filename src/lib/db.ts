@@ -1,74 +1,17 @@
-import { openDB } from "idb";
 import type { Account, AppSettings, BackupData, Category, Transaction } from "../types";
 import { defaultAccounts, defaultCategories, defaultSettings } from "./defaults";
 import { readVaultData, updateVaultData } from "./secure-vault";
 
-// The old database is accessed ONLY when first setting a vault password.
-// The new application never writes unencrypted financial data to it.
-const legacyDatabase = openDB("finanzas-local-db", 3, {
-  upgrade(db, oldVersion, _newVersion, transaction) {
-    if (!db.objectStoreNames.contains("accounts"))
-      db.createObjectStore("accounts", { keyPath: "id" });
-    if (!db.objectStoreNames.contains("categories"))
-      db.createObjectStore("categories", { keyPath: "id" });
-    if (!db.objectStoreNames.contains("transactions")) {
-      const store = db.createObjectStore("transactions", { keyPath: "id" });
-      store.createIndex("date", "date");
-      store.createIndex("accountId", "accountId");
-      store.createIndex("categoryId", "categoryId");
-    }
-    if (!db.objectStoreNames.contains("settings")) db.createObjectStore("settings");
-    if (oldVersion < 2) {
-      for (const category of defaultCategories.filter((item) => item.parent === "Vehículos"))
-        transaction.objectStore("categories").put(category);
-    }
-    if (oldVersion < 3) {
-      for (const category of defaultCategories)
-        transaction.objectStore("categories").put(category);
-    }
-  },
-});
-
-const emptyData = (): BackupData => ({
-  version: 1,
-  exportedAt: new Date().toISOString(),
-  accounts: defaultAccounts,
-  categories: defaultCategories,
-  transactions: [],
-  settings: defaultSettings,
-});
-
-/** Read once before encryption; old records are kept if encryption fails. */
-export async function readLegacyData(): Promise<{ data: BackupData; hasPreviousRecords: boolean }> {
-  const db = await legacyDatabase;
-  const [accounts, categories, transactions, settings] = await Promise.all([
-    db.getAll("accounts") as Promise<Account[]>,
-    db.getAll("categories") as Promise<Category[]>,
-    db.getAll("transactions") as Promise<Transaction[]>,
-    db.get("settings", "main") as Promise<AppSettings | undefined>,
-  ]);
-  const hasPreviousRecords = accounts.length > 0 || transactions.length > 0;
-  const fallback = emptyData();
+/** This application never opens, modifies or deletes the old app's IndexedDB. */
+export function getInitialData(): BackupData {
   return {
-    hasPreviousRecords,
-    data: {
-      version: 1,
-      exportedAt: new Date().toISOString(),
-      accounts: accounts.length ? accounts : fallback.accounts,
-      categories: categories.length ? categories : fallback.categories,
-      transactions,
-      settings: settings ?? fallback.settings,
-    },
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    accounts: structuredClone(defaultAccounts),
+    categories: structuredClone(defaultCategories),
+    transactions: [],
+    settings: structuredClone(defaultSettings),
   };
-}
-
-/** Call only AFTER an encrypted vault was persisted and verified. */
-export async function clearLegacyData(): Promise<void> {
-  const db = await legacyDatabase;
-  const tx = db.transaction(["accounts", "categories", "transactions", "settings"], "readwrite");
-  for (const store of ["accounts", "categories", "transactions", "settings"] as const)
-    await tx.objectStore(store).clear();
-  await tx.done;
 }
 
 export async function seedIfNeeded() {
