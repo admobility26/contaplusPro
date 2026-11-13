@@ -2393,6 +2393,7 @@ function SettingsPage({
 }) {
   const [v, setV] = useState(settings);
   const [msg, setMsg] = useState("");
+  const [restorePassword, setRestorePassword] = useState("");
   const downloadBackup = async () => {
     const encrypted = await exportEncryptedBackup();
     downloadBlob(encrypted, `finanzas-seguras-${today()}.json`, "application/json");
@@ -2409,15 +2410,19 @@ function SettingsPage({
   };
   const load = async (file: File) => {
     try {
-      const password = prompt("Introduce la contraseña de esta copia cifrada:");
-      if (!password) return;
+      if (!restorePassword) {
+        setMsg("Introduce primero la contraseña de la copia cifrada.");
+        return;
+      }
       const encrypted = await file.text();
       if (!confirm("La copia reemplazará los datos locales actuales. ¿Continuar?")) return;
-      await restoreEncryptedBackup(encrypted, password);
+      await restoreEncryptedBackup(encrypted, restorePassword);
       await refresh();
       setMsg("Copia cifrada restaurada correctamente.");
     } catch (error) {
       setMsg(error instanceof Error ? error.message : "No se pudo restaurar la copia cifrada.");
+    } finally {
+      setRestorePassword("");
     }
   };
   return (
@@ -2477,6 +2482,16 @@ function SettingsPage({
             <p>Exporta un archivo JSON cifrado. Para restaurarlo necesitarás su contraseña.</p>
           </div>
         </div>
+        <label className="restore-password-label">
+          Contraseña de la copia que quieres restaurar
+          <input
+            type="password"
+            autoComplete="off"
+            placeholder="Introduce la contraseña antes de elegir el archivo"
+            value={restorePassword}
+            onChange={(e) => setRestorePassword(e.target.value)}
+          />
+        </label>
         <div className="backup-actions">
           <button onClick={downloadBackup}>
             <Download size={18} />
