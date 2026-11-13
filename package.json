@@ -1,5 +1,5 @@
 {
-  "name": "tanstack_start_ts",
+  "name": "contaplus-pro",
   "private": true,
   "sideEffects": false,
   "type": "module",
@@ -11,7 +11,10 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "bun test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "predev": "node scripts/copy-ocr-assets.mjs",
+    "prebuild": "node scripts/copy-ocr-assets.mjs",
+    "prebuild:dev": "node scripts/copy-ocr-assets.mjs"
   },
   "overrides": {
     "rolldown": "1.2.1"
