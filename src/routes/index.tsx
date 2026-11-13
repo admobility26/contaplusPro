@@ -6,13 +6,13 @@ const FinanzasApp = lazy(() => import("../components/FinanzasApp"));
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Finanzas Local · Contabilidad doméstica privada" },
+      { title: "ContaPlus Pro · Contabilidad doméstica privada" },
       {
         name: "description",
         content:
           "Contabilidad doméstica local-first: cuentas, tarjetas, hipotecas y préstamos. Importa extractos PDF/CSV sin enviarlos a ningún servidor.",
       },
-      { property: "og:title", content: "Finanzas Local · Contabilidad doméstica privada" },
+      { property: "og:title", content: "ContaPlus Pro · Contabilidad doméstica privada" },
       {
         property: "og:description",
         content:
